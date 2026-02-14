@@ -43,11 +43,20 @@ export const actions = {
     }
 
     const mediaProvider = getMediaProvider();
-    const uploaded = await Promise.all(
-      selectedFiles.map((file) =>
-        mediaProvider.upload({ kind: "photos", file }),
-      ),
-    );
+    let uploaded: Awaited<
+      ReturnType<typeof mediaProvider.upload>
+    >[] = [];
+    try {
+      uploaded = await Promise.all(
+        selectedFiles.map((file) =>
+          mediaProvider.upload({ kind: "photos", file }),
+        ),
+      );
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Unknown upload error";
+      return fail(500, { message: `GCS upload failed: ${message}` });
+    }
 
     const now = new Date().toISOString();
     const photos = await getPhotos();

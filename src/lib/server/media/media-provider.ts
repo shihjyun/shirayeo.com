@@ -3,6 +3,8 @@ export type MediaKind = "photos" | "works";
 export interface UploadedMedia {
   fileName: string;
   url: string;
+  width: number;
+  height: number;
 }
 
 export interface MediaProvider {

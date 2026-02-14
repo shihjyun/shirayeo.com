@@ -50,6 +50,8 @@ export class GcsStubMediaProvider implements MediaProvider {
     return {
       fileName,
       url: this.publicUrl(args.kind, fileName),
+      width: 0,
+      height: 0,
     };
   }
 }

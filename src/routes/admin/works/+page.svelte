@@ -1,10 +1,17 @@
 <script lang="ts">
+  import { validateImageFile } from "$lib/client/image-compression";
+  import { normalizeImageForUpload } from "$lib/client/image-preprocess";
   import type { ActionData, PageData } from "./$types";
 
   let { data, form }: { data: PageData; form: ActionData } = $props();
   let editorMode = $state<"edit" | "create">("edit");
   let createDigitalSize = $state("");
   let editDigitalSize = $state("");
+  let createCoverFileName = $state("");
+  let editCoverFileName = $state("");
+  let localError = $state("");
+  let isCheckingCover = $state(false);
+  let isSubmittingWork = $state(false);
 
   const selectedWork = $derived(
     data.selectedIndex >= 0 && data.works[data.selectedIndex]
@@ -50,30 +57,102 @@
   }
 
   async function onCreateCoverChange(event: Event): Promise<void> {
+    localError = "";
+    isCheckingCover = true;
     const target = event.currentTarget as HTMLInputElement;
-    const file = target.files?.[0];
-    if (!file) return;
+    const selectedFile = target.files?.[0];
+    if (!selectedFile) {
+      createCoverFileName = "";
+      isCheckingCover = false;
+      return;
+    }
 
-    const size = await getImageSize(file);
-    if (size) createDigitalSize = size;
+    try {
+      const validation = await validateImageFile(selectedFile);
+      if (!validation.valid) {
+        localError = validation.reason ?? "檔案不是可用圖片";
+        createCoverFileName = "";
+        target.value = "";
+        return;
+      }
+
+      const normalizedFile = await normalizeImageForUpload(selectedFile);
+      const dt = new DataTransfer();
+      dt.items.add(normalizedFile);
+      target.files = dt.files;
+      createCoverFileName = normalizedFile.name;
+      try {
+        const size = await getImageSize(normalizedFile);
+        if (size) {
+          createDigitalSize = size;
+        }
+      } catch {
+        localError = "已選擇圖片，但瀏覽器無法讀取尺寸（可正常上傳）。";
+      }
+    } catch {
+      localError = "圖片轉換失敗，請改用 JPG/PNG 或更換檔案。";
+      createCoverFileName = "";
+      target.value = "";
+    } finally {
+      isCheckingCover = false;
+    }
   }
 
   async function onEditCoverChange(event: Event): Promise<void> {
+    localError = "";
+    isCheckingCover = true;
     const target = event.currentTarget as HTMLInputElement;
-    const file = target.files?.[0];
-    if (!file) return;
+    const selectedFile = target.files?.[0];
+    if (!selectedFile) {
+      editCoverFileName = "";
+      isCheckingCover = false;
+      return;
+    }
 
-    const size = await getImageSize(file);
-    if (size) editDigitalSize = size;
+    try {
+      const validation = await validateImageFile(selectedFile);
+      if (!validation.valid) {
+        localError = validation.reason ?? "檔案不是可用圖片";
+        editCoverFileName = "";
+        target.value = "";
+        return;
+      }
+
+      const normalizedFile = await normalizeImageForUpload(selectedFile);
+      const dt = new DataTransfer();
+      dt.items.add(normalizedFile);
+      target.files = dt.files;
+      editCoverFileName = normalizedFile.name;
+      try {
+        const size = await getImageSize(normalizedFile);
+        if (size) {
+          editDigitalSize = size;
+        }
+      } catch {
+        localError = "已選擇圖片，但瀏覽器無法讀取尺寸（可正常上傳）。";
+      }
+    } catch {
+      localError = "圖片轉換失敗，請改用 JPG/PNG 或更換檔案。";
+      editCoverFileName = "";
+      target.value = "";
+    } finally {
+      isCheckingCover = false;
+    }
   }
 
   function openCreatePanel(): void {
     editorMode = "create";
     createDigitalSize = "";
+    createCoverFileName = "";
+    localError = "";
   }
 
   function openEditPanel(): void {
     editorMode = "edit";
+  }
+
+  function onSubmitWork(): void {
+    isSubmittingWork = true;
   }
 </script>
 
@@ -125,6 +204,18 @@
         </button>
       {/if}
     </div>
+    <p class="mt-2 text-xs text-zinc-500">
+      cover 圖片會由伺服器在上傳前壓縮到約 800KB。
+    </p>
+    {#if isCheckingCover}
+      <p class="mt-2 text-sm text-blue-700">正在檢查圖片檔案...</p>
+    {/if}
+    {#if isSubmittingWork}
+      <p class="mt-2 text-sm text-blue-700">圖片壓縮與上傳中，請稍候...</p>
+    {/if}
+    {#if localError}
+      <p class="mt-2 text-sm text-red-700">{localError}</p>
+    {/if}
 
     {#if form?.message}
       <p class="mt-2 text-sm text-amber-700">{form.message}</p>
@@ -136,6 +227,7 @@
         method="POST"
         action="?/createWork"
         enctype="multipart/form-data"
+        onsubmit={onSubmitWork}
       >
         <label class="grid gap-1 text-sm">
           work_name
@@ -194,24 +286,51 @@
           </select>
         </label>
 
-        <label class="grid gap-1 text-sm md:col-span-2">
-          cover_image_url
-          <input
-            class="rounded border border-zinc-300 px-3 py-2"
-            name="cover_image_url"
-          />
-        </label>
+        <div class="grid gap-1 text-sm md:col-span-2">
+          <span>cover_image_file</span>
+          <label
+            class={`flex items-center justify-between rounded border border-zinc-300 px-3 py-2 ${
+              isCheckingCover
+                ? "cursor-not-allowed opacity-70"
+                : "cursor-pointer"
+            }`}
+          >
+            <span class="truncate text-sm text-zinc-700">
+              {createCoverFileName
+                ? `已選擇：${createCoverFileName}`
+                : "尚未選擇圖片"}
+            </span>
+            <span class="rounded border border-zinc-400 px-2 py-1 text-xs">
+              {createCoverFileName ? "更換圖片" : "選擇圖片"}
+            </span>
+            <input
+              class="hidden"
+              name="cover_image_file"
+              type="file"
+              accept="image/*"
+              onchange={onCreateCoverChange}
+              disabled={isCheckingCover}
+            />
+          </label>
+        </div>
 
-        <label class="grid gap-1 text-sm md:col-span-2">
-          cover_image_file
-          <input
-            class="rounded border border-zinc-300 px-3 py-2"
-            name="cover_image_file"
-            type="file"
-            accept="image/*"
-            onchange={onCreateCoverChange}
-          />
-        </label>
+        <div class="grid gap-1 text-sm md:col-span-2">
+          <span>目前封面預覽</span>
+          {#if selectedWork?.cover_image_url}
+            <img
+              src={selectedWork.cover_image_url}
+              alt={`${selectedWork?.work_name ?? "work"} cover`}
+              class="h-56 w-full rounded border border-zinc-300 bg-zinc-100 object-cover"
+              loading="lazy"
+            />
+          {:else}
+            <div
+              class="flex h-56 w-full items-center justify-center rounded border border-zinc-300 bg-zinc-100 text-sm text-zinc-500"
+            >
+              尚未上傳封面圖片
+            </div>
+          {/if}
+        </div>
 
         <label class="grid gap-1 text-sm md:col-span-2">
           description
@@ -225,8 +344,9 @@
         <button
           class="rounded bg-zinc-900 px-4 py-2 text-sm text-white md:col-span-2"
           type="submit"
+          disabled={isSubmittingWork || isCheckingCover}
         >
-          Create
+          {isSubmittingWork ? "Creating..." : "Create"}
         </button>
       </form>
     {:else if selectedWork && data.selectedIndex >= 0}
@@ -235,6 +355,7 @@
         method="POST"
         action="?/updateWork"
         enctype="multipart/form-data"
+        onsubmit={onSubmitWork}
       >
         <input type="hidden" name="index" value={data.selectedIndex} />
 
@@ -302,25 +423,51 @@
           </select>
         </label>
 
-        <label class="grid gap-1 text-sm md:col-span-2">
-          cover_image_url
-          <input
-            class="rounded border border-zinc-300 px-3 py-2"
-            name="cover_image_url"
-            value={selectedWork.cover_image_url}
-          />
-        </label>
+        <div class="grid gap-1 text-sm md:col-span-2">
+          <span>cover_image_file</span>
+          <label
+            class={`flex items-center justify-between rounded border border-zinc-300 px-3 py-2 ${
+              isCheckingCover
+                ? "cursor-not-allowed opacity-70"
+                : "cursor-pointer"
+            }`}
+          >
+            <span class="truncate text-sm text-zinc-700">
+              {editCoverFileName
+                ? `已選擇：${editCoverFileName}`
+                : "尚未選擇圖片"}
+            </span>
+            <span class="rounded border border-zinc-400 px-2 py-1 text-xs">
+              {editCoverFileName ? "更換圖片" : "選擇圖片"}
+            </span>
+            <input
+              class="hidden"
+              name="cover_image_file"
+              type="file"
+              accept="image/*"
+              onchange={onEditCoverChange}
+              disabled={isCheckingCover}
+            />
+          </label>
+        </div>
 
-        <label class="grid gap-1 text-sm md:col-span-2">
-          cover_image_file
-          <input
-            class="rounded border border-zinc-300 px-3 py-2"
-            name="cover_image_file"
-            type="file"
-            accept="image/*"
-            onchange={onEditCoverChange}
-          />
-        </label>
+        <div class="grid gap-1 text-sm md:col-span-2">
+          <span>目前封面預覽</span>
+          {#if selectedWork?.cover_image_url}
+            <img
+              src={selectedWork.cover_image_url}
+              alt={`${selectedWork?.work_name ?? "work"} cover`}
+              class="h-56 w-full rounded border border-zinc-300 bg-zinc-100 object-cover"
+              loading="lazy"
+            />
+          {:else}
+            <div
+              class="flex h-56 w-full items-center justify-center rounded border border-zinc-300 bg-zinc-100 text-sm text-zinc-500"
+            >
+              尚未上傳封面圖片
+            </div>
+          {/if}
+        </div>
 
         <label class="grid gap-1 text-sm md:col-span-2">
           description
@@ -334,8 +481,9 @@
         <button
           class="rounded bg-zinc-900 px-4 py-2 text-sm text-white md:col-span-2"
           type="submit"
+          disabled={isSubmittingWork || isCheckingCover}
         >
-          Save Changes
+          {isSubmittingWork ? "Saving..." : "Save Changes"}
         </button>
       </form>
 

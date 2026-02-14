@@ -1,6 +1,7 @@
 import { env } from "$env/dynamic/private";
 
 import type { MediaProvider } from "./media-provider";
+import { GcsMediaProvider } from "./providers/gcs";
 import { GcsStubMediaProvider } from "./providers/gcs.stub";
 
 function createMediaProvider(): MediaProvider {
@@ -10,8 +11,7 @@ function createMediaProvider(): MediaProvider {
     case "stub":
       return new GcsStubMediaProvider();
     case "gcs":
-      // TODO: Replace with real GCS provider implementation in future phase.
-      return new GcsStubMediaProvider();
+      return new GcsMediaProvider();
     default:
       throw new Error(
         `Unsupported MEDIA_PROVIDER: ${mode}. Use "stub" or "gcs".`,

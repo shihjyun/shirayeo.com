@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { validateImageFile } from "$lib/client/image-compression";
+  import { normalizeImageForUpload } from "$lib/client/image-preprocess";
   import type { ActionData, PageData } from "./$types";
 
   let { data, form }: { data: PageData; form: ActionData } = $props();
@@ -6,6 +8,9 @@
   let fileInput = $state<HTMLInputElement | null>(null);
   let pendingFiles = $state<File[]>([]);
   let isDragging = $state(false);
+  let localError = $state("");
+  let isValidatingFiles = $state(false);
+  let isUploading = $state(false);
 
   function syncInput(files: File[]): void {
     if (!fileInput) return;
@@ -15,25 +20,56 @@
     fileInput.files = dataTransfer.files;
   }
 
-  function mergePending(nextFiles: File[]): void {
-    const merged = [...pendingFiles, ...nextFiles];
-    pendingFiles = merged;
-    syncInput(merged);
+  async function mergePending(nextFiles: File[]): Promise<void> {
+    localError = "";
+    isValidatingFiles = true;
+    const validFiles: File[] = [];
+    const reasons: string[] = [];
+
+    try {
+      for (const file of nextFiles) {
+        try {
+          const result = await validateImageFile(file);
+          if (result.valid) {
+            const normalized = await normalizeImageForUpload(file);
+            validFiles.push(normalized);
+          } else if (result.reason) {
+            reasons.push(result.reason);
+          }
+        } catch {
+          reasons.push(`${file.name} 轉檔失敗，請改用 JPG/PNG`);
+        }
+      }
+
+      if (reasons.length > 0) {
+        localError = reasons[0];
+      }
+
+      if (validFiles.length === 0) {
+        return;
+      }
+
+      const merged = [...pendingFiles, ...validFiles];
+      pendingFiles = merged;
+      syncInput(merged);
+    } finally {
+      isValidatingFiles = false;
+    }
   }
 
-  function onInputChange(event: Event): void {
+  async function onInputChange(event: Event): Promise<void> {
     const target = event.currentTarget as HTMLInputElement;
     const files = Array.from(target.files ?? []);
-    mergePending(files);
+    await mergePending(files);
   }
 
-  function onDrop(event: DragEvent): void {
+  async function onDrop(event: DragEvent): Promise<void> {
     event.preventDefault();
     isDragging = false;
 
     const files = Array.from(event.dataTransfer?.files ?? []);
     if (files.length > 0) {
-      mergePending(files);
+      await mergePending(files);
     }
   }
 
@@ -41,6 +77,10 @@
     const next = pendingFiles.filter((_, i) => i !== index);
     pendingFiles = next;
     syncInput(next);
+  }
+
+  function onSubmitUpload(): void {
+    isUploading = true;
   }
 </script>
 
@@ -50,6 +90,18 @@
     <p class="mt-1 text-sm text-zinc-600">
       拖拉照片到待上傳區，送出後會寫入 <code>data/photos.yaml</code>。
     </p>
+    <p class="mt-1 text-xs text-zinc-500">
+      伺服器會在上傳前自動壓縮圖片到約 800KB。
+    </p>
+    {#if isValidatingFiles}
+      <p class="mt-2 text-sm text-blue-700">正在檢查檔案格式...</p>
+    {/if}
+    {#if isUploading}
+      <p class="mt-2 text-sm text-blue-700">圖片壓縮與上傳中，請稍候...</p>
+    {/if}
+    {#if localError}
+      <p class="mt-2 text-sm text-red-700">{localError}</p>
+    {/if}
     {#if form?.message}
       <p class="mt-2 text-sm text-amber-700">{form.message}</p>
     {/if}
@@ -63,13 +115,14 @@
         method="POST"
         action="?/uploadPhotos"
         enctype="multipart/form-data"
+        onsubmit={onSubmitUpload}
       >
         <label
-          class={`block cursor-pointer rounded-lg border-2 border-dashed p-6 text-center text-sm ${
+          class={`block rounded-lg border-2 border-dashed p-6 text-center text-sm ${
             isDragging
               ? "border-zinc-900 bg-zinc-100"
               : "border-zinc-300 bg-zinc-50 hover:border-zinc-500"
-          }`}
+          } ${isUploading || isValidatingFiles ? "cursor-not-allowed opacity-70" : "cursor-pointer"}`}
           ondragenter={() => (isDragging = true)}
           ondragover={(event) => event.preventDefault()}
           ondragleave={() => (isDragging = false)}
@@ -82,6 +135,7 @@
             name="photos"
             multiple
             onchange={onInputChange}
+            disabled={isValidatingFiles}
           />
           將檔案拖拉到這裡，或點擊選擇檔案
         </label>
@@ -97,6 +151,7 @@
                   type="button"
                   class="rounded border border-zinc-400 px-2 py-1 text-xs"
                   onclick={() => removePending(index)}
+                  disabled={isUploading || isValidatingFiles}
                 >
                   移除
                 </button>
@@ -110,9 +165,11 @@
         <button
           type="submit"
           class="mt-3 rounded-md bg-zinc-900 px-4 py-2 text-sm text-white disabled:cursor-not-allowed disabled:opacity-50"
-          disabled={pendingFiles.length === 0}
+          disabled={pendingFiles.length === 0 ||
+            isUploading ||
+            isValidatingFiles}
         >
-          上傳待上傳檔案
+          {isUploading ? "上傳中..." : "上傳待上傳檔案"}
         </button>
       </form>
     </article>

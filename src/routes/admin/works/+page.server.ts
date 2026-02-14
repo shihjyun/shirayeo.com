@@ -30,17 +30,23 @@ function readWorkFromForm(formData: FormData): Work {
     digital_size: asString(formData.get("digital_size")),
     description: asString(formData.get("description")),
     layout: toLayout(formData.get("layout")),
-    cover_image_url: asString(formData.get("cover_image_url")),
+    cover_image_url: null,
   };
 }
 
-async function resolveCoverImageUrl(
+function toLongByShort(width: number, height: number): string {
+  const longSide = Math.max(width, height);
+  const shortSide = Math.min(width, height);
+  return `${longSide} x ${shortSide}`;
+}
+
+async function resolveCoverImageUpload(
   formData: FormData,
-  fallbackUrl: string,
-): Promise<string> {
+  fallbackUrl: string | null,
+): Promise<{ url: string | null; digitalSize: string | null }> {
   const maybeFile = formData.get("cover_image_file");
   if (!(maybeFile instanceof File) || maybeFile.size === 0) {
-    return fallbackUrl;
+    return { url: fallbackUrl, digitalSize: null };
   }
 
   const mediaProvider = getMediaProvider();
@@ -48,7 +54,12 @@ async function resolveCoverImageUrl(
     kind: "works",
     file: maybeFile,
   });
-  return uploaded.url;
+  const digitalSize =
+    uploaded.width > 0 && uploaded.height > 0
+      ? toLongByShort(uploaded.width, uploaded.height)
+      : null;
+
+  return { url: uploaded.url, digitalSize };
 }
 
 function isWorkValid(work: Work): boolean {
@@ -101,10 +112,17 @@ export const actions = {
 
     const formData = await request.formData();
     const nextWork = readWorkFromForm(formData);
-    nextWork.cover_image_url = await resolveCoverImageUrl(
-      formData,
-      nextWork.cover_image_url,
-    );
+    try {
+      const uploaded = await resolveCoverImageUpload(formData, null);
+      nextWork.cover_image_url = uploaded.url;
+      if (uploaded.digitalSize) {
+        nextWork.digital_size = uploaded.digitalSize;
+      }
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Unknown upload error";
+      return fail(500, { message: `GCS upload failed: ${message}` });
+    }
 
     if (!isWorkValid(nextWork)) {
       return fail(400, { message: "Missing required work fields." });
@@ -128,10 +146,20 @@ export const actions = {
     if (!works[index]) return fail(404, { message: "Work not found." });
 
     const nextWork = readWorkFromForm(formData);
-    nextWork.cover_image_url = await resolveCoverImageUrl(
-      formData,
-      nextWork.cover_image_url,
-    );
+    try {
+      const uploaded = await resolveCoverImageUpload(
+        formData,
+        works[index].cover_image_url,
+      );
+      nextWork.cover_image_url = uploaded.url;
+      if (uploaded.digitalSize) {
+        nextWork.digital_size = uploaded.digitalSize;
+      }
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Unknown upload error";
+      return fail(500, { message: `GCS upload failed: ${message}` });
+    }
     if (!isWorkValid(nextWork)) {
       return fail(400, { message: "Missing required work fields." });
     }

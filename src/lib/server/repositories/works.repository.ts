@@ -8,6 +8,12 @@ function asString(value: unknown): string {
   return typeof value === "string" ? value : "";
 }
 
+function asNullableString(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const normalized = value.trim();
+  return normalized.length > 0 ? normalized : null;
+}
+
 function normalizeWork(row: unknown): Work {
   const raw =
     typeof row === "object" && row !== null
@@ -23,7 +29,7 @@ function normalizeWork(row: unknown): Work {
     digital_size: asString(raw.digital_size),
     description: asString(raw.description),
     layout,
-    cover_image_url: asString(raw.cover_image_url),
+    cover_image_url: asNullableString(raw.cover_image_url),
   };
 }
 

@@ -8,7 +8,7 @@ export interface Work {
   digital_size: string;
   description: string;
   layout: WorkLayout;
-  cover_image_url: string;
+  cover_image_url: string | null;
 }
 
 export interface Photo {
