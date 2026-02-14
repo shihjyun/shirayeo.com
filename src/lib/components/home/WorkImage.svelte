@@ -5,14 +5,37 @@
     layout,
     imageUrl,
     workName,
+    digitalSize,
   }: {
     layout: WorkLayout;
     imageUrl: string | null;
     workName: string;
+    digitalSize: string;
   } = $props();
+
+  const ratio = $derived(parseDigitalSize(digitalSize));
+  const ratioStyle = $derived(
+    ratio ? `aspect-ratio: ${ratio.width} / ${ratio.height};` : undefined,
+  );
+
+  function parseDigitalSize(
+    size: string,
+  ): { width: number; height: number } | null {
+    const matched = size.match(/(\d+)\s*[xX]\s*(\d+)/);
+    if (!matched) return null;
+
+    const width = Number(matched[1]);
+    const height = Number(matched[2]);
+    if (!Number.isFinite(width) || !Number.isFinite(height)) return null;
+    if (width <= 0 || height <= 0) return null;
+    return { width, height };
+  }
 </script>
 
-<div class={`work-image ${layout === "橫" ? "is-landscape" : "is-portrait"}`}>
+<div
+  class={`work-image ${layout === "橫" ? "is-landscape" : "is-portrait"}`}
+  style={ratioStyle}
+>
   {#if imageUrl}
     <img src={imageUrl} alt={workName} loading="lazy" />
   {:else}
@@ -44,7 +67,8 @@
 
   .work-image img {
     display: block;
-    object-fit: cover;
+    object-fit: contain;
+    background: #ffffff;
   }
 
   @media (max-width: 700px) {

@@ -17,6 +17,7 @@
     layout={work.layout}
     imageUrl={work.cover_image_url}
     workName={work.work_name}
+    digitalSize={work.digital_size}
   />
 
   <div class="work-info">
