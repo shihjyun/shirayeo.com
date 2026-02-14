@@ -29,25 +29,33 @@
 
 <style>
   .work-entry {
-    width: min(100%, 640px);
+    width: min(100%, 680px);
     margin: 0 auto;
   }
 
   .work-info {
-    margin-top: 1.25rem;
+    margin-top: 0.95rem;
   }
 
   .work-info h3 {
     margin: 0;
-    font-size: clamp(1.8rem, 3vw, 2.3rem);
-    font-weight: 500;
+    font-size: clamp(1.28rem, 1.8vw, 1.7rem);
+    font-weight: 540;
+    line-height: 1.3;
   }
 
-  .work-meta,
+  .work-meta {
+    margin: 0.35rem 0 0;
+    color: #4f6066;
+    font-size: clamp(0.88rem, 1.02vw, 0.96rem);
+    line-height: 1.55;
+    letter-spacing: 0.01em;
+  }
+
   .work-description {
-    margin: 0.65rem 0 0;
-    color: #111111;
-    font-size: clamp(1.3rem, 2vw, 1.75rem);
-    line-height: 1.38;
+    margin: 0.52rem 0 0;
+    color: #1f2a2d;
+    font-size: clamp(0.98rem, 1.2vw, 1.08rem);
+    line-height: 1.75;
   }
 </style>

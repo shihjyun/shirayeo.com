@@ -33,14 +33,14 @@
 
 <style>
   .page-shell {
-    margin: 4.5rem auto 5rem;
-    max-width: 820px;
+    margin: 3.4rem auto 4.4rem;
+    max-width: 860px;
     padding: 0 1.5rem;
   }
 
   @media (max-width: 700px) {
     .page-shell {
-      margin: 2.2rem auto 3.8rem;
+      margin: 1.9rem auto 3.2rem;
       padding: 0 1.1rem;
     }
   }
