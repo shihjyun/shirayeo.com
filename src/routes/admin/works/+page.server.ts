@@ -34,10 +34,8 @@ function readWorkFromForm(formData: FormData): Work {
   };
 }
 
-function toLongByShort(width: number, height: number): string {
-  const longSide = Math.max(width, height);
-  const shortSide = Math.min(width, height);
-  return `${longSide} x ${shortSide}`;
+function toWidthByHeight(width: number, height: number): string {
+  return `${width} x ${height}`;
 }
 
 async function resolveCoverImageUpload(
@@ -56,7 +54,7 @@ async function resolveCoverImageUpload(
   });
   const digitalSize =
     uploaded.width > 0 && uploaded.height > 0
-      ? toLongByShort(uploaded.width, uploaded.height)
+      ? toWidthByHeight(uploaded.width, uploaded.height)
       : null;
 
   return { url: uploaded.url, digitalSize };

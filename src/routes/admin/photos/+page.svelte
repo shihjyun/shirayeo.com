@@ -94,16 +94,16 @@
       伺服器會在上傳前自動壓縮圖片到約 800KB。
     </p>
     {#if isValidatingFiles}
-      <p class="mt-2 text-sm text-blue-700">正在檢查檔案格式...</p>
+      <p class="mt-2 text-sm text-zinc-700">正在檢查檔案格式...</p>
     {/if}
     {#if isUploading}
-      <p class="mt-2 text-sm text-blue-700">圖片壓縮與上傳中，請稍候...</p>
+      <p class="mt-2 text-sm text-zinc-700">圖片壓縮與上傳中，請稍候...</p>
     {/if}
     {#if localError}
-      <p class="mt-2 text-sm text-red-700">{localError}</p>
+      <p class="mt-2 text-sm text-zinc-800">{localError}</p>
     {/if}
     {#if form?.message}
-      <p class="mt-2 text-sm text-amber-700">{form.message}</p>
+      <p class="mt-2 text-sm text-zinc-700">{form.message}</p>
     {/if}
   </header>
 
@@ -191,7 +191,7 @@
               <input type="hidden" name="index" value={index} />
               <button
                 type="submit"
-                class="rounded border border-red-500 px-2 py-1 text-xs text-red-700"
+                class="rounded border border-zinc-500 px-2 py-1 text-xs text-zinc-800"
               >
                 刪除
               </button>

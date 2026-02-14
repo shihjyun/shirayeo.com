@@ -208,17 +208,17 @@
       cover 圖片會由伺服器在上傳前壓縮到約 800KB。
     </p>
     {#if isCheckingCover}
-      <p class="mt-2 text-sm text-blue-700">正在檢查圖片檔案...</p>
+      <p class="mt-2 text-sm text-zinc-700">正在檢查圖片檔案...</p>
     {/if}
     {#if isSubmittingWork}
-      <p class="mt-2 text-sm text-blue-700">圖片壓縮與上傳中，請稍候...</p>
+      <p class="mt-2 text-sm text-zinc-700">圖片壓縮與上傳中，請稍候...</p>
     {/if}
     {#if localError}
-      <p class="mt-2 text-sm text-red-700">{localError}</p>
+      <p class="mt-2 text-sm text-zinc-800">{localError}</p>
     {/if}
 
     {#if form?.message}
-      <p class="mt-2 text-sm text-amber-700">{form.message}</p>
+      <p class="mt-2 text-sm text-zinc-700">{form.message}</p>
     {/if}
 
     {#if editorMode === "create"}
@@ -230,7 +230,7 @@
         onsubmit={onSubmitWork}
       >
         <label class="grid gap-1 text-sm">
-          work_name
+          作品名稱
           <input
             class="rounded border border-zinc-300 px-3 py-2"
             name="work_name"
@@ -239,7 +239,7 @@
         </label>
 
         <label class="grid gap-1 text-sm">
-          created_date
+          創作日期
           <input
             class="rounded border border-zinc-300 px-3 py-2"
             name="created_date"
@@ -249,7 +249,7 @@
         </label>
 
         <label class="grid gap-1 text-sm">
-          materials
+          媒材
           <input
             class="rounded border border-zinc-300 px-3 py-2"
             name="materials"
@@ -258,7 +258,7 @@
         </label>
 
         <label class="grid gap-1 text-sm">
-          real_size
+          實體尺寸
           <input
             class="rounded border border-zinc-300 px-3 py-2"
             name="real_size"
@@ -267,7 +267,7 @@
         </label>
 
         <label class="grid gap-1 text-sm">
-          digital_size
+          數位尺寸
           <input
             class="rounded border border-zinc-300 px-3 py-2"
             name="digital_size"
@@ -276,7 +276,7 @@
         </label>
 
         <label class="grid gap-1 text-sm">
-          layout
+          版型
           <select
             class="rounded border border-zinc-300 px-3 py-2"
             name="layout"
@@ -287,7 +287,7 @@
         </label>
 
         <div class="grid gap-1 text-sm md:col-span-2">
-          <span>cover_image_file</span>
+          <span>封面圖片</span>
           <label
             class={`flex items-center justify-between rounded border border-zinc-300 px-3 py-2 ${
               isCheckingCover
@@ -333,7 +333,7 @@
         </div>
 
         <label class="grid gap-1 text-sm md:col-span-2">
-          description
+          作品描述
           <textarea
             class="rounded border border-zinc-300 px-3 py-2"
             name="description"
@@ -360,7 +360,7 @@
         <input type="hidden" name="index" value={data.selectedIndex} />
 
         <label class="grid gap-1 text-sm">
-          work_name
+          作品名稱
           <input
             class="rounded border border-zinc-300 px-3 py-2"
             name="work_name"
@@ -370,7 +370,7 @@
         </label>
 
         <label class="grid gap-1 text-sm">
-          created_date
+          創作日期
           <input
             class="rounded border border-zinc-300 px-3 py-2"
             name="created_date"
@@ -380,7 +380,7 @@
         </label>
 
         <label class="grid gap-1 text-sm">
-          materials
+          媒材
           <input
             class="rounded border border-zinc-300 px-3 py-2"
             name="materials"
@@ -390,7 +390,7 @@
         </label>
 
         <label class="grid gap-1 text-sm">
-          real_size
+          實體尺寸
           <input
             class="rounded border border-zinc-300 px-3 py-2"
             name="real_size"
@@ -400,7 +400,7 @@
         </label>
 
         <label class="grid gap-1 text-sm">
-          digital_size
+          數位尺寸
           <input
             class="rounded border border-zinc-300 px-3 py-2"
             name="digital_size"
@@ -409,7 +409,7 @@
         </label>
 
         <label class="grid gap-1 text-sm">
-          layout
+          版型
           <select
             class="rounded border border-zinc-300 px-3 py-2"
             name="layout"
@@ -424,7 +424,7 @@
         </label>
 
         <div class="grid gap-1 text-sm md:col-span-2">
-          <span>cover_image_file</span>
+          <span>封面圖片</span>
           <label
             class={`flex items-center justify-between rounded border border-zinc-300 px-3 py-2 ${
               isCheckingCover
@@ -470,7 +470,7 @@
         </div>
 
         <label class="grid gap-1 text-sm md:col-span-2">
-          description
+          作品描述
           <textarea
             class="rounded border border-zinc-300 px-3 py-2"
             name="description"
@@ -490,7 +490,7 @@
       <form class="mt-3" method="POST" action="?/deleteWork">
         <input type="hidden" name="index" value={data.selectedIndex} />
         <button
-          class="rounded border border-red-500 px-3 py-2 text-sm text-red-700"
+          class="rounded border border-zinc-500 px-3 py-2 text-sm text-zinc-800"
           type="submit"
         >
           Delete This Work
