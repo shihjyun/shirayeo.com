@@ -1,18 +1,57 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import type { Work } from "$lib/types";
 
   import WorkImage from "./WorkImage.svelte";
 
   let { work }: { work: Work } = $props();
   const description = $derived(work.description.trim());
+  let cardElement = $state<HTMLElement | null>(null);
+  let isVisible = $state(false);
 
   function displayYear(date: string): string {
     const parsed = new Date(date);
     return Number.isNaN(parsed.getTime()) ? date : String(parsed.getFullYear());
   }
+
+  onMount(() => {
+    if (!cardElement) return;
+
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    if (prefersReducedMotion) {
+      isVisible = true;
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            isVisible = true;
+            observer.disconnect();
+          }
+        });
+      },
+      {
+        threshold: 0.18,
+        rootMargin: "0px 0px -8% 0px",
+      },
+    );
+
+    observer.observe(cardElement);
+
+    return () => observer.disconnect();
+  });
 </script>
 
-<article class={`work-entry ${work.layout === "直" ? "is-portrait" : "is-landscape"}`}>
+<article
+  bind:this={cardElement}
+  class={`work-entry ${work.layout === "直" ? "is-portrait" : "is-landscape"} ${
+    isVisible ? "is-visible" : ""
+  }`}
+>
   <WorkImage
     layout={work.layout}
     imageUrl={work.cover_image_url}
@@ -35,6 +74,17 @@
   .work-entry {
     width: min(100%, 720px);
     margin: 0 auto;
+    opacity: 0;
+    transform: translateY(22px);
+    transition:
+      opacity 540ms ease,
+      transform 540ms ease;
+    will-change: opacity, transform;
+  }
+
+  .work-entry.is-visible {
+    opacity: 1;
+    transform: translateY(0);
   }
 
   .work-info {
@@ -71,6 +121,14 @@
   @media (max-width: 700px) {
     .work-entry.is-portrait .work-info {
       width: min(82%, 340px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .work-entry {
+      opacity: 1;
+      transform: none;
+      transition: none;
     }
   }
 </style>
