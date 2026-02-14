@@ -20,7 +20,7 @@ body {
 
 .page-shell {
   margin: 0 auto;
-  max-width: 1100px;
+  max-width: 1120px;
   padding: 2rem 1.25rem 4rem;
   display: grid;
   gap: 1rem;
@@ -54,7 +54,7 @@ body {
 .hero-intro,
 .section-description {
   margin: 0.9rem 0 0;
-  max-width: 56ch;
+  max-width: 62ch;
   color: var(--muted-ink);
   line-height: 1.75;
 }
@@ -103,31 +103,113 @@ body {
   padding: 0;
   list-style: none;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 0.8rem;
+  grid-template-columns: 1fr;
+  gap: 1rem;
 }
 
 .work-item {
+  display: grid;
+  gap: 0.9rem;
   padding: 1rem;
   border-radius: 0.9rem;
   background: #fffef9;
   border: 1px solid #d8cebe;
 }
 
-.work-item h3 {
-  margin: 0;
-  font-size: 1.08rem;
+.work-cover {
+  border-radius: 0.7rem;
+  overflow: hidden;
+  border: 1px solid #d6c7b7;
+  background: #f0e8db;
 }
 
-.work-item p {
-  margin: 0.45rem 0 0;
-  line-height: 1.6;
+.work-cover.is-portrait {
+  aspect-ratio: 3 / 4;
+}
+
+.work-cover.is-landscape {
+  aspect-ratio: 16 / 10;
+}
+
+.work-cover img,
+.work-cover-placeholder {
+  width: 100%;
+  height: 100%;
+}
+
+.work-cover img {
+  display: block;
+  object-fit: cover;
+}
+
+.work-cover-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    linear-gradient(140deg, #ece0cf, #f9f2e6),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 8px,
+      #d7c7b21a 8px,
+      #d7c7b21a 16px
+    );
+  color: #8a7a68;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.work-content h3 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.meta {
+  margin: 0.4rem 0 0;
+  font-size: 0.92rem;
+  color: #7a6c5f;
+}
+
+.work-facts {
+  margin: 0.8rem 0 0;
+  display: grid;
+  gap: 0.4rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.work-facts div {
+  border: 1px solid #ded2c4;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.55rem;
+}
+
+.work-facts dt {
+  margin: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8a7a68;
+}
+
+.work-facts dd {
+  margin: 0.25rem 0 0;
+  font-size: 0.88rem;
+  color: #4f463f;
+}
+
+.work-description {
+  margin: 0.8rem 0 0;
+  line-height: 1.65;
   color: var(--muted-ink);
 }
 
-.work-item .meta {
-  font-size: 0.9rem;
-  color: #7a6c5f;
+@media (min-width: 700px) {
+  .work-item {
+    grid-template-columns: minmax(220px, 0.6fr) 1fr;
+    align-items: start;
+  }
 }
 
 @media (min-width: 860px) {

@@ -3,7 +3,32 @@
 
   let { data }: { data: PageData } = $props();
   let cameraActive = $state(false);
+
+  const works = $derived(
+    [...data.works].sort(
+      (a, b) => Date.parse(b.created_date) - Date.parse(a.created_date),
+    ),
+  );
+
+  const pageTitle = "Shirayeo Portfolio | Drawing Works";
+  const pageDescription =
+    "Shirayeo 的手繪與複合媒材作品集，收錄畫作資訊與照片紀錄。";
+  const ogImage = "/favicon.svg";
+
+  function displayYear(date: string): string {
+    const parsed = new Date(date);
+    return Number.isNaN(parsed.getTime()) ? date : String(parsed.getFullYear());
+  }
 </script>
+
+<svelte:head>
+  <title>{pageTitle}</title>
+  <meta name="description" content={pageDescription} />
+  <meta property="og:title" content={pageTitle} />
+  <meta property="og:description" content={pageDescription} />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content={ogImage} />
+</svelte:head>
 
 <main class="page-shell">
   <section class="hero-card">
@@ -11,6 +36,7 @@
     <h1 class="hero-title">Drawing Portfolio</h1>
     <p class="hero-intro">
       我以手繪與複合媒材記錄日常觀察，專注於線條節奏、光影邊界與材質的細微變化。
+      目前收錄 {works.length} 件畫作與 {data.photos.length} 張照片。
     </p>
   </section>
 
@@ -42,15 +68,55 @@
     <div class="gallery-head">
       <h2 class="section-title">Works</h2>
       <p class="section-description">
-        目前作品資料由本地 `data/works.yaml` 讀取。
+        依創作日期由新到舊排列，完整顯示每件作品資訊。
       </p>
     </div>
     <ul class="works-grid">
-      {#each data.works as work}
+      {#each works as work}
         <li class="work-item">
-          <h3>{work.work_name}</h3>
-          <p class="meta">{work.created_date} · {work.materials}</p>
-          <p>{work.description}</p>
+          <div
+            class={`work-cover ${work.layout === "橫" ? "is-landscape" : "is-portrait"}`}
+          >
+            {#if work.cover_image_url}
+              <img
+                src={work.cover_image_url}
+                alt={work.work_name}
+                loading="lazy"
+              />
+            {:else}
+              <div class="work-cover-placeholder" aria-hidden="true">
+                <span>{work.layout === "橫" ? "Landscape" : "Portrait"}</span>
+              </div>
+            {/if}
+          </div>
+
+          <div class="work-content">
+            <h3>{work.work_name}</h3>
+            <p class="meta">
+              {displayYear(work.created_date)} · {work.materials}
+            </p>
+
+            <dl class="work-facts">
+              <div>
+                <dt>創作日期</dt>
+                <dd>{work.created_date}</dd>
+              </div>
+              <div>
+                <dt>實體尺寸</dt>
+                <dd>{work.real_size || "-"}</dd>
+              </div>
+              <div>
+                <dt>數位尺寸</dt>
+                <dd>{work.digital_size || "-"}</dd>
+              </div>
+              <div>
+                <dt>版型</dt>
+                <dd>{work.layout}</dd>
+              </div>
+            </dl>
+
+            <p class="work-description">{work.description || "尚未填寫描述"}</p>
+          </div>
         </li>
       {/each}
     </ul>
