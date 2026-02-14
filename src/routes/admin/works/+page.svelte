@@ -185,7 +185,10 @@
 
         <label class="grid gap-1 text-sm">
           layout
-          <select class="rounded border border-zinc-300 px-3 py-2" name="layout">
+          <select
+            class="rounded border border-zinc-300 px-3 py-2"
+            name="layout"
+          >
             <option value="直">直</option>
             <option value="橫">橫</option>
           </select>
@@ -193,7 +196,10 @@
 
         <label class="grid gap-1 text-sm md:col-span-2">
           cover_image_url
-          <input class="rounded border border-zinc-300 px-3 py-2" name="cover_image_url" />
+          <input
+            class="rounded border border-zinc-300 px-3 py-2"
+            name="cover_image_url"
+          />
         </label>
 
         <label class="grid gap-1 text-sm md:col-span-2">
@@ -209,7 +215,11 @@
 
         <label class="grid gap-1 text-sm md:col-span-2">
           description
-          <textarea class="rounded border border-zinc-300 px-3 py-2" name="description" rows="4"></textarea>
+          <textarea
+            class="rounded border border-zinc-300 px-3 py-2"
+            name="description"
+            rows="4"
+          ></textarea>
         </label>
 
         <button
@@ -279,9 +289,16 @@
 
         <label class="grid gap-1 text-sm">
           layout
-          <select class="rounded border border-zinc-300 px-3 py-2" name="layout">
-            <option value="直" selected={selectedWork.layout === "直"}>直</option>
-            <option value="橫" selected={selectedWork.layout === "橫"}>橫</option>
+          <select
+            class="rounded border border-zinc-300 px-3 py-2"
+            name="layout"
+          >
+            <option value="直" selected={selectedWork.layout === "直"}
+              >直</option
+            >
+            <option value="橫" selected={selectedWork.layout === "橫"}
+              >橫</option
+            >
           </select>
         </label>
 
