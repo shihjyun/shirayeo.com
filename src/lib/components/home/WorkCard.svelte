@@ -4,6 +4,7 @@
   import WorkImage from "./WorkImage.svelte";
 
   let { work }: { work: Work } = $props();
+  const description = $derived(work.description.trim());
 
   function displayYear(date: string): string {
     const parsed = new Date(date);
@@ -11,7 +12,7 @@
   }
 </script>
 
-<article class="work-entry">
+<article class={`work-entry ${work.layout === "直" ? "is-portrait" : "is-landscape"}`}>
   <WorkImage
     layout={work.layout}
     imageUrl={work.cover_image_url}
@@ -23,7 +24,9 @@
     <p class="work-meta">
       {displayYear(work.created_date)} · {work.real_size || "-"} · {work.materials}
     </p>
-    <p class="work-description">{work.description || "作品描述"}</p>
+    {#if description}
+      <p class="work-description">{description}</p>
+    {/if}
   </div>
 </article>
 
@@ -57,5 +60,16 @@
     color: #1f2a2d;
     font-size: clamp(0.98rem, 1.2vw, 1.08rem);
     line-height: 1.75;
+  }
+
+  .work-entry.is-portrait .work-info {
+    width: min(70%, 430px);
+    margin: 0.95rem auto 0;
+  }
+
+  @media (max-width: 700px) {
+    .work-entry.is-portrait .work-info {
+      width: min(82%, 340px);
+    }
   }
 </style>
