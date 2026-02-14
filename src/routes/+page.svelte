@@ -2,7 +2,6 @@
   import type { PageData } from "./$types";
 
   let { data }: { data: PageData } = $props();
-  let cameraActive = $state(false);
 
   const works = $derived(
     [...data.works].sort(
@@ -31,51 +30,20 @@
 </svelte:head>
 
 <main class="page-shell">
-  <section class="hero-card">
-    <p class="hero-kicker">Shirayeo</p>
-    <h1 class="hero-title">Drawing Portfolio</h1>
-    <p class="hero-intro">
-      我以手繪與複合媒材記錄日常觀察，專注於線條節奏、光影邊界與材質的細微變化。
-      目前收錄 {works.length} 件畫作與 {data.photos.length} 張照片。
+  <section class="intro-block">
+    <h1 class="intro-title"><span>shirayeo</span></h1>
+    <p class="intro-copy">
+      楊時瑞，2008年生於臺灣。主要以素描與水彩作為創作媒材，透過觀察日常與自身經驗，探索時間、記憶與情感在畫面中的痕跡。創作之外，也以攝影記錄生活片段，成為視覺靈感的重要來源。
     </p>
   </section>
 
-  <section class="camera-card">
-    <div class="camera-copy">
-      <h2 class="section-title">Photo Zone</h2>
-      <p class="section-description">
-        目前收錄 {data.photos.length}
-        張照片。先完成互動狀態切換，拍照與上傳流程會在後續 Phase 補上。
-      </p>
-    </div>
-    <button
-      type="button"
-      class:camera-button={true}
-      class:is-active={cameraActive}
-      aria-pressed={cameraActive}
-      onclick={() => (cameraActive = !cameraActive)}
-    >
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path
-          d="M8.5 5.75h7l1.2 1.75H20A2.25 2.25 0 0 1 22.25 9.75v8.5A2.25 2.25 0 0 1 20 20.5H4A2.25 2.25 0 0 1 1.75 18.25v-8.5A2.25 2.25 0 0 1 4 7.5h3.3l1.2-1.75ZM12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0-1.75a2.25 2.25 0 1 1 0-4.5 2.25 2.25 0 0 1 0 4.5Z"
-        />
-      </svg>
-      <span>{cameraActive ? "Camera Active" : "Camera Inactive"}</span>
-    </button>
-  </section>
-
-  <section class="gallery-card">
-    <div class="gallery-head">
-      <h2 class="section-title">Works</h2>
-      <p class="section-description">
-        依創作日期由新到舊排列，完整顯示每件作品資訊。
-      </p>
-    </div>
-    <ul class="works-grid">
+  <section class="works-section">
+    <h2 class="works-title">作品</h2>
+    <ul class="works-list">
       {#each works as work}
-        <li class="work-item">
+        <li class="work-entry">
           <div
-            class={`work-cover ${work.layout === "橫" ? "is-landscape" : "is-portrait"}`}
+            class={`work-image ${work.layout === "橫" ? "is-landscape" : "is-portrait"}`}
           >
             {#if work.cover_image_url}
               <img
@@ -84,38 +52,16 @@
                 loading="lazy"
               />
             {:else}
-              <div class="work-cover-placeholder" aria-hidden="true">
-                <span>{work.layout === "橫" ? "Landscape" : "Portrait"}</span>
-              </div>
+              <div class="work-image-placeholder" aria-hidden="true"></div>
             {/if}
           </div>
 
-          <div class="work-content">
+          <div class="work-info">
             <h3>{work.work_name}</h3>
-            <p class="meta">
-              {displayYear(work.created_date)} · {work.materials}
+            <p class="work-meta">
+              {displayYear(work.created_date)} · {work.real_size || "-"} · {work.materials}
             </p>
-
-            <dl class="work-facts">
-              <div>
-                <dt>創作日期</dt>
-                <dd>{work.created_date}</dd>
-              </div>
-              <div>
-                <dt>實體尺寸</dt>
-                <dd>{work.real_size || "-"}</dd>
-              </div>
-              <div>
-                <dt>數位尺寸</dt>
-                <dd>{work.digital_size || "-"}</dd>
-              </div>
-              <div>
-                <dt>版型</dt>
-                <dd>{work.layout}</dd>
-              </div>
-            </dl>
-
-            <p class="work-description">{work.description || "尚未填寫描述"}</p>
+            <p class="work-description">{work.description || "作品描述"}</p>
           </div>
         </li>
       {/each}
