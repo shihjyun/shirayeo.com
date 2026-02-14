@@ -7,11 +7,13 @@
   --muted: #607d8b;
   --line: #5271cc;
   --placeholder: #d5d5d5;
+  --font-body: "Noto Serif TC", "Noto Serif Traditional Chinese", serif;
+  --font-display: "Playfair Display", "Times New Roman", serif;
 }
 
 body {
   margin: 0;
   background: var(--bg);
   color: var(--ink);
-  font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+  font-family: var(--font-body);
 }

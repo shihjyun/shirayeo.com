@@ -28,6 +28,7 @@
     font-size: 0.75rem;
     letter-spacing: 0.24em;
     text-transform: uppercase;
+    font-family: var(--font-display);
   }
 
   .works-title {

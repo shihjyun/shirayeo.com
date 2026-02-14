@@ -19,6 +19,7 @@
     font-size: clamp(2rem, 3.2vw, 2.6rem);
     font-weight: 520;
     line-height: 1.08;
+    font-family: var(--font-display);
   }
 
   .intro-title span {
