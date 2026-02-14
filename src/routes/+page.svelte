@@ -1,26 +1,8 @@
 <script lang="ts">
-  let cameraActive = false;
+  import type { PageData } from "./$types";
 
-  const works = [
-    {
-      title: "靜默之所",
-      year: "2025",
-      materials: "炭筆、石墨",
-      description: "在靜止與呼吸之間，描繪內在空間的微弱光線。",
-    },
-    {
-      title: "琢磨",
-      year: "2024",
-      materials: "炭筆、石墨",
-      description: "反覆修整的痕跡，保留手勢與時間交疊後的質地。",
-    },
-    {
-      title: "沿岸筆記",
-      year: "2023",
-      materials: "色鉛筆、墨",
-      description: "以低飽和色層記錄海邊日常，聚焦於形體邊界。",
-    },
-  ];
+  let { data }: { data: PageData } = $props();
+  let cameraActive = $state(false);
 </script>
 
 <main class="page-shell">
@@ -36,7 +18,8 @@
     <div class="camera-copy">
       <h2 class="section-title">Photo Zone</h2>
       <p class="section-description">
-        先完成互動狀態切換，拍照與上傳流程會在後續 Phase 補上。
+        目前收錄 {data.photos.length}
+        張照片。先完成互動狀態切換，拍照與上傳流程會在後續 Phase 補上。
       </p>
     </div>
     <button
@@ -59,14 +42,14 @@
     <div class="gallery-head">
       <h2 class="section-title">Works</h2>
       <p class="section-description">
-        Phase 2 使用假資料呈現作品清單，Phase 3 會改接本地 YAML。
+        目前作品資料由本地 `data/works.yaml` 讀取。
       </p>
     </div>
     <ul class="works-grid">
-      {#each works as work}
+      {#each data.works as work}
         <li class="work-item">
-          <h3>{work.title}</h3>
-          <p class="meta">{work.year} · {work.materials}</p>
+          <h3>{work.work_name}</h3>
+          <p class="meta">{work.created_date} · {work.materials}</p>
           <p>{work.description}</p>
         </li>
       {/each}
