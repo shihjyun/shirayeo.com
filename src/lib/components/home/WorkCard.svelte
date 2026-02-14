@@ -94,6 +94,7 @@
   .work-info h3 {
     margin: 0;
     font-size: clamp(1.28rem, 1.8vw, 1.7rem);
+    color: #143b62;
     font-weight: 540;
     line-height: 1.3;
   }

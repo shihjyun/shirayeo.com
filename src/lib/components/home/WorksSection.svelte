@@ -33,7 +33,7 @@
 
   .works-title {
     margin: 0.45rem 0 0;
-    color: var(--muted);
+    color: #161374;
     text-align: center;
     font-size: clamp(2rem, 3vw, 2.55rem);
     font-weight: 620;
