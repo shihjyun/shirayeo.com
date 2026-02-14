@@ -1,4 +1,6 @@
 <script lang="ts">
+  import HomeIntro from "$lib/components/home/HomeIntro.svelte";
+  import WorksSection from "$lib/components/home/WorksSection.svelte";
   import type { PageData } from "./$types";
 
   let { data }: { data: PageData } = $props();
@@ -13,11 +15,6 @@
   const pageDescription =
     "Shirayeo 的手繪與複合媒材作品集，收錄畫作資訊與照片紀錄。";
   const ogImage = "/favicon.svg";
-
-  function displayYear(date: string): string {
-    const parsed = new Date(date);
-    return Number.isNaN(parsed.getTime()) ? date : String(parsed.getFullYear());
-  }
 </script>
 
 <svelte:head>
@@ -30,41 +27,21 @@
 </svelte:head>
 
 <main class="page-shell">
-  <section class="intro-block">
-    <h1 class="intro-title"><span>shirayeo</span></h1>
-    <p class="intro-copy">
-      {data.profile.intro}
-    </p>
-  </section>
-
-  <section class="works-section">
-    <h2 class="works-title">作品</h2>
-    <ul class="works-list">
-      {#each works as work}
-        <li class="work-entry">
-          <div
-            class={`work-image ${work.layout === "橫" ? "is-landscape" : "is-portrait"}`}
-          >
-            {#if work.cover_image_url}
-              <img
-                src={work.cover_image_url}
-                alt={work.work_name}
-                loading="lazy"
-              />
-            {:else}
-              <div class="work-image-placeholder" aria-hidden="true"></div>
-            {/if}
-          </div>
-
-          <div class="work-info">
-            <h3>{work.work_name}</h3>
-            <p class="work-meta">
-              {displayYear(work.created_date)} · {work.real_size || "-"} · {work.materials}
-            </p>
-            <p class="work-description">{work.description || "作品描述"}</p>
-          </div>
-        </li>
-      {/each}
-    </ul>
-  </section>
+  <HomeIntro intro={data.profile.intro} />
+  <WorksSection {works} />
 </main>
+
+<style>
+  .page-shell {
+    margin: 4.5rem auto 5rem;
+    max-width: 820px;
+    padding: 0 1.5rem;
+  }
+
+  @media (max-width: 700px) {
+    .page-shell {
+      margin: 2.2rem auto 3.8rem;
+      padding: 0 1.1rem;
+    }
+  }
+</style>
