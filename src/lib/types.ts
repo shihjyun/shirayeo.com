@@ -15,3 +15,7 @@ export interface Photo {
   file_name: string;
   uploaded_at: string;
 }
+
+export interface ArtistProfile {
+  intro: string;
+}
