@@ -33,7 +33,7 @@
 
 <style>
   .work-entry {
-    width: min(100%, 680px);
+    width: min(100%, 720px);
     margin: 0 auto;
   }
 
