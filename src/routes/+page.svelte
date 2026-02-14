@@ -33,7 +33,7 @@
   <section class="intro-block">
     <h1 class="intro-title"><span>shirayeo</span></h1>
     <p class="intro-copy">
-      楊時瑞，2008年生於臺灣。主要以素描與水彩作為創作媒材，透過觀察日常與自身經驗，探索時間、記憶與情感在畫面中的痕跡。創作之外，也以攝影記錄生活片段，成為視覺靈感的重要來源。
+      {data.profile.intro}
     </p>
   </section>
 
