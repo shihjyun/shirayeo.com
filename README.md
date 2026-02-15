@@ -1,42 +1,58 @@
-# sv
+# shirayeo.com
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+SvelteKit portfolio site.
 
-## Creating a project
-
-If you're seeing this, you've probably already done this step. Congrats!
+## Local development
 
 ```sh
-# create a new project
-npx sv create my-app
-```
-
-To recreate this project with the same configuration:
-
-```sh
-# recreate this project
-npx sv create --template minimal --types ts --install npm .
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
+npm install
 npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
 ```
 
-## Building
-
-To create a production version of your app:
+## Production build (local check)
 
 ```sh
 npm run build
+npm run preview
 ```
 
-You can preview the production build with `npm run preview`.
+## Deploy to Vercel
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+This project uses `@sveltejs/adapter-vercel`.
+
+### Option A: Deploy from Vercel dashboard
+
+1. Push this repo to GitHub/GitLab/Bitbucket.
+2. In Vercel, click `Add New...` -> `Project`.
+3. Import this repository.
+4. Framework preset should be detected as `SvelteKit`.
+5. Add environment variables from `.env.example` in `Project Settings` -> `Environment Variables`.
+6. Click `Deploy`.
+
+### Option B: Deploy with Vercel CLI
+
+```sh
+npm i -g vercel
+vercel login
+vercel
+vercel --prod
+```
+
+## Environment variables
+
+Copy `.env.example` values into Vercel environment variables.
+
+- `PUBLIC_SITE_TITLE`
+- `MEDIA_PROVIDER` (`stub` or `gcs`)
+- `MEDIA_PHOTOS_BASE_URL`
+- `MEDIA_WORKS_BASE_URL`
+- `GCS_PROJECT_ID` (required when `MEDIA_PROVIDER=gcs`)
+- `GCS_CLIENT_EMAIL` (required when `MEDIA_PROVIDER=gcs`)
+- `GCS_PRIVATE_KEY` (required when `MEDIA_PROVIDER=gcs`)
+- `GCS_BUCKET_NAME` (required when `MEDIA_PROVIDER=gcs`)
+- `GCS_OBJECT_PREFIX` (optional when `MEDIA_PROVIDER=gcs`)
+
+## Important note for `/admin`
+
+`/admin` is currently restricted to `localhost` only (`src/lib/server/admin-auth.ts`).
+After deploying to Vercel, public requests to `/admin` will return `403` unless this logic is changed.
