@@ -49,7 +49,7 @@
   const pageTitle = "Shi Ray Yeo Portfolio";
   const pageDescription =
     "Shi Ray Yeo 的手繪與複合媒材作品集，收錄畫作資訊與照片紀錄。";
-  const ogImage = "/favicon.svg";
+  const ogImage = "/og-image.png";
   const currentYear = new Date().getFullYear();
 </script>
 
