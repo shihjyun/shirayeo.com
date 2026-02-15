@@ -10,8 +10,8 @@
   <p class="works-kicker">selected works</p>
   <h2 class="works-title">作品</h2>
   <ul class="works-list">
-    {#each works as work}
-      <li><WorkCard {work} /></li>
+    {#each works as work, index}
+      <li><WorkCard {work} immediateVisible={index === 0} /></li>
     {/each}
   </ul>
 </section>

@@ -4,7 +4,10 @@
 
   import WorkImage from "./WorkImage.svelte";
 
-  let { work }: { work: Work } = $props();
+  let {
+    work,
+    immediateVisible = false,
+  }: { work: Work; immediateVisible?: boolean } = $props();
   const description = $derived(work.description.trim());
   let cardElement = $state<HTMLElement | null>(null);
   let isVisible = $state(false);
@@ -15,6 +18,11 @@
   }
 
   onMount(() => {
+    if (immediateVisible) {
+      isVisible = true;
+      return;
+    }
+
     if (!cardElement) return;
 
     const prefersReducedMotion = window.matchMedia(
@@ -49,7 +57,7 @@
 <article
   bind:this={cardElement}
   class={`work-entry ${work.layout === "直" ? "is-portrait" : "is-landscape"} ${
-    isVisible ? "is-visible" : ""
+    immediateVisible || isVisible ? "is-visible" : ""
   }`}
 >
   <WorkImage
