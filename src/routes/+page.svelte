@@ -1,7 +1,14 @@
 <script lang="ts">
   import HomeIntro from "$lib/components/home/HomeIntro.svelte";
+  import PhotoViewer from "$lib/components/home/PhotoViewer.svelte";
   import WorksSection from "$lib/components/home/WorksSection.svelte";
   import type { PageData } from "./$types";
+
+  interface ViewerPhoto {
+    file_name: string;
+    uploaded_at: string;
+    url: string;
+  }
 
   let { data }: { data: PageData } = $props();
 
@@ -10,6 +17,34 @@
       (a, b) => Date.parse(b.created_date) - Date.parse(a.created_date),
     ),
   );
+  const photos = $derived(
+    data.photos.filter(
+      (photo): photo is ViewerPhoto =>
+        typeof photo.file_name === "string" &&
+        typeof photo.url === "string" &&
+        photo.url.length > 0,
+    ),
+  );
+  let viewerPhotos = $state<ViewerPhoto[]>([]);
+  let isPhotoViewerOpen = $state(false);
+
+  function shufflePhotos(list: ViewerPhoto[]): ViewerPhoto[] {
+    const shuffled = [...list];
+    for (let i = shuffled.length - 1; i > 0; i -= 1) {
+      const randomIndex = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[randomIndex]] = [shuffled[randomIndex], shuffled[i]];
+    }
+    return shuffled;
+  }
+
+  function openPhotoViewer(): void {
+    viewerPhotos = shufflePhotos(photos);
+    isPhotoViewerOpen = true;
+  }
+
+  function closePhotoViewer(): void {
+    isPhotoViewerOpen = false;
+  }
 
   const pageTitle = "Shirayeo Portfolio | Drawing Works";
   const pageDescription =
@@ -27,9 +62,13 @@
 </svelte:head>
 
 <main class="page-shell">
-  <HomeIntro intro={data.profile.intro} />
+  <HomeIntro intro={data.profile.intro} onOpenPhotos={openPhotoViewer} />
   <WorksSection {works} />
 </main>
+
+{#if isPhotoViewerOpen}
+  <PhotoViewer photos={viewerPhotos} onClose={closePhotoViewer} />
+{/if}
 
 <style>
   .page-shell {
