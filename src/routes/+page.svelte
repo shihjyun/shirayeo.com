@@ -46,10 +46,11 @@
     isPhotoViewerOpen = false;
   }
 
-  const pageTitle = "Shirayeo Portfolio | Drawing Works";
+  const pageTitle = "Shi Ray Yeo Portfolio";
   const pageDescription =
-    "Shirayeo 的手繪與複合媒材作品集，收錄畫作資訊與照片紀錄。";
+    "Shi Ray Yeo 的手繪與複合媒材作品集，收錄畫作資訊與照片紀錄。";
   const ogImage = "/favicon.svg";
+  const currentYear = new Date().getFullYear();
 </script>
 
 <svelte:head>
@@ -64,6 +65,10 @@
 <main class="page-shell">
   <HomeIntro intro={data.profile.intro} onOpenPhotos={openPhotoViewer} />
   <WorksSection {works} />
+  <footer class="page-footer">
+    <p>© {currentYear} shirayeo</p>
+    <p class="page-footer-note">All rights reserved.</p>
+  </footer>
 </main>
 
 {#if isPhotoViewerOpen}
@@ -77,10 +82,37 @@
     padding: 0 1.5rem;
   }
 
+  .page-footer {
+    margin-top: 6rem;
+    padding-top: 1.4rem;
+    border-top: 1px solid rgba(26, 39, 103, 0.16);
+    text-align: center;
+    color: #4c536a;
+    font-size: 0.84rem;
+    letter-spacing: 0.04em;
+  }
+
+  .page-footer p {
+    margin: 0;
+  }
+
+  .page-footer-note {
+    margin-top: 0.25rem !important;
+    color: #7b8094;
+    font-size: 0.74rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
   @media (max-width: 700px) {
     .page-shell {
-      margin: 1.9rem auto 3.2rem;
+      margin: 3rem auto 3.2rem;
       padding: 0 1.1rem;
+    }
+
+    .page-footer {
+      margin-top: 4rem;
+      padding-top: 1rem;
     }
   }
 </style>
